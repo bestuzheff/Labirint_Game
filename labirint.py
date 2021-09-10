@@ -1,40 +1,57 @@
 import random
 import pygame
 
-size = widht, height = (960, 960)
-screen = pygame.display.set_mode(size)
+# Размер ячейки
+cell_size = 64
 
-# Размеры лабиринта на будущее
+# Размер поля
+size = (15 * cell_size, 15 * cell_size)
+screen = pygame.display.set_mode(size)
+pygame.display.set_caption("Maze")
+
+# Размеры лабиринта на будущее, если захочу сделать полностью динамический
 size_x = 15
 size_y = 15
 
-start_x = 0
-start_y = 0
-finish_x = 0
-finish_y = 0
-
 # Шаблон лабиринта
-labirint = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+maze = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
 
 
-# Обработка соседних клеток
-def cell_editing(x, y):
+# Функция которая щагрузает картинки и изменять их размер под размер ячейки
+def load_image(image_file_name):
+    full_image_file_name = 'images' + '/' + image_file_name
+    try:
+        image = pygame.image.load(full_image_file_name)
+        image = pygame.transform.scale(image, (cell_size, cell_size)).convert_alpha()  # Изменение размера картинки
+    except any:
+        print("Ошибка загрузки изображения:", image_file_name)
+        raise SystemExit()
+    return image
+
+
+########################################################################################################################
+# Функции для генерации лабиринта
+
+# Функция выбирает соседние клетки для добавления их в лабиринт (выбор в лучайном порядке) + рекурсия
+def cell_editing(x, y, depth):
+    # Увеличим глубину
+    depth += 1
     # Определим все возможные направления движения
     directions = []
     last_cell = True
@@ -57,85 +74,64 @@ def cell_editing(x, y):
         directions.remove(item)
         # Левая клетка 1
         if item == 1:
-            if labirint[x - 1][y] == 1 and labirint[x - 2][y] == 0:
+            if maze[x - 1][y] == 0 and maze[x - 2][y] == 1:
                 last_cell = False
-                labirint[x - 1][y] = 0
-                labirint[x - 2][y] = 2
-                cell_editing(x - 2, y)
+                maze[x - 1][y] = 1
+                maze[x - 2][y] = 2
+                cell_editing(x - 2, y, depth)
         # Верхняя клетка 2
         if item == 2:
-            if labirint[x][y + 1] == 1 and labirint[x][y + 2] == 0:
+            if maze[x][y + 1] == 0 and maze[x][y + 2] == 1:
                 last_cell = False
-                labirint[x][y + 1] = 0
-                labirint[x][y + 2] = 2
-                cell_editing(x, y + 2)
+                maze[x][y + 1] = 1
+                maze[x][y + 2] = 2
+                cell_editing(x, y + 2, depth)
         # Правая клетка 3
         if item == 3:
-            if labirint[x + 1][y] == 1 and labirint[x + 2][y] == 0:
+            if maze[x + 1][y] == 0 and maze[x + 2][y] == 1:
                 last_cell = False
-                labirint[x + 1][y] = 0
-                labirint[x + 2][y] = 2
-                cell_editing(x + 2, y)
+                maze[x + 1][y] = 1
+                maze[x + 2][y] = 2
+                cell_editing(x + 2, y, depth)
         # Нижняя клетка 4
         if item == 4:
-            if labirint[x][y - 1] == 1 and labirint[x][y - 2] == 0:
+            if maze[x][y - 1] == 0 and maze[x][y - 2] == 1:
                 last_cell = False
-                labirint[x][y - 1] = 0
-                labirint[x][y - 2] = 2
-                cell_editing(x, y - 2)
+                maze[x][y - 1] = 1
+                maze[x][y - 2] = 2
+                cell_editing(x, y - 2, depth)
 
+    # Запишем грубину, ячейка с самой большйо глубиной будет концом лабиринта
     if last_cell:
-        labirint[x][y] = 4
-        print("Finish: ", x, y)
-
+        maze[x][y] = depth
 
 
 # Процедура генерирует лабиринт
-def create_labirint():
+def create_maze():
     # Формируем список клеток которые надо поситить
     # Выбираем случайную клетку
-    y = 13
-    x = random.randint(1, 11)
+    y = size_y - 2
+    x = random.randint(1, size_y - 4)
     if x % 2 == 0:
         x += 1
-
-    labirint[x][y] = 3
-    print("Start: ", x, y)
-    cell_editing(x, y)
-
-
-# 0.Инициализировать лабиринт, выбрав в немслучайную клетку.
-# 1.Выбрать любую соседнюю (для текущей клетки) клетку.
-# Соседних клеток может быть 2, 3 или 4, в зависимости от расположения клетки.
-# 2.Если соседняя клетка не является частью лабиринта –добавить ее в лабиринт,
-# т.е.  убрать  стенку,  соединяющую  две  клетки.  Иначе переход к шагу 3.
-# 3.Если не осталось непосещенных клеток –останов. Иначе переход к шагу 1.
-
-def load_image(image_file_name):
-    full_image_file_name = 'images' + '/' + image_file_name
-    try:
-        image = pygame.image.load(full_image_file_name).convert_alpha()
-        # image = pygame.transform.scale(image, (64, 64)).convert() #Изменение размера картинки
-    except any:
-        print("Ошибка загрузка изображения:", image_file_name)
-        raise SystemExit()
-    return image
+    maze[x][y] = 3
+    cell_editing(x, y, 0)
+########################################################################################################################
 
 
-create_labirint()
+# Подгружаем все спрайты
+bg = load_image("bg_1.png")
+road = load_image("road.png")
 
-white = load_image("white.png")
-black = load_image("black.png")
-green = load_image("green.png")
+create_maze()
 
-for x in range(size_x):
-    for y in range(size_y):
-        if labirint[x][y] == 0 or labirint[x][y] == 2:
-            screen.blit(white, (x * 64, y * 64))
-        if labirint[x][y] == 1:
-            screen.blit(black, (x * 64, y * 64))
-        if labirint[x][y] == 3 or labirint[x][y] == 4:
-            screen.blit(green, (x * 64, y * 64))
+for _x in range(size_x):
+    for _y in range(size_y):
+        # Все клетки заполняем BG
+        # TODO Сделать несколько фонов и выбирать рандомно
+        screen.blit(bg, (_x * cell_size, _y * cell_size))
+        if maze[_x][_y] > 0:
+            screen.blit(road, (_x * cell_size, _y * cell_size))
 
 pygame.init()
 
