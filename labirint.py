@@ -47,10 +47,38 @@ def load_image(image_file_name):
 
 # Функция определяет какой спрайт надо отрисовать
 def define_sprite(x, y):
+    # Направления дороги
     if maze[x + 1][y] > 0 and maze[x - 1][y] > 0 and maze[x][y+1] == 0 and maze[x][y-1] == 0:
         return road_left_right
     if maze[x + 1][y] == 0 and maze[x - 1][y] == 0 and maze[x][y + 1] > 0 and maze[x][y - 1] > 0:
         return road_up_down
+
+    # Тупики
+    if maze[x][y+1] > 0 and maze[x+1][y] == 0 and maze[x][y-1] == 0 and maze[x-1][y] == 0:
+        return road_end_up
+    if maze[x][y+1] == 0 and maze[x+1][y] > 0 and maze[x][y-1] == 0 and maze[x-1][y] == 0:
+        return road_end_left
+    if maze[x][y+1] == 0 and maze[x+1][y] == 0 and maze[x][y-1] > 0 and maze[x-1][y] == 0:
+        return road_end_down
+    if maze[x][y+1] == 0 and maze[x+1][y] == 0 and maze[x][y-1] == 0 and maze[x-1][y] > 0:
+        return road_end_right
+
+    # Перекресток 2
+    if maze[x][y+1] > 0 and maze[x+1][y] > 0 and maze[x][y-1] == 0 and maze[x-1][y] == 0:
+        return cross_2_right_down
+    if maze[x][y+1] == 0 and maze[x+1][y] > 0 and maze[x][y-1] > 0 and maze[x-1][y] == 0:
+        return cross_2_up_right
+    if maze[x][y+1] == 0 and maze[x+1][y] == 0 and maze[x][y-1] > 0 and maze[x-1][y] > 0:
+        return cross_2_left_up
+    if maze[x][y+1] > 0 and maze[x+1][y] == 0 and maze[x][y-1] == 0 and maze[x-1][y] > 0:
+        return cross_2_down_left
+
+    # Перекресток 3
+
+    # Перекресток 4
+    if maze[x][y+1] > 0 and maze[x+1][y] > 0 and maze[x][y-1] > 0 and maze[x-1][y] > 0:
+        return cross_4
+
     return road_up_down
 
 
@@ -131,9 +159,44 @@ def create_maze():
 
 
 # Подгружаем все спрайты
-bg = load_image("bg_1.png")
+# Грузим все вариаты фона
+bg = []
+bg.append(load_image("bg_01.png"))
+bg.append(load_image("bg_02.png"))
+bg.append(load_image("bg_03.png"))
+bg.append(load_image("bg_04.png"))
+bg.append(load_image("bg_05.png"))
+bg.append(load_image("bg_06.png"))
+bg.append(load_image("bg_07.png"))
+bg.append(load_image("bg_08.png"))
+bg.append(load_image("bg_09.png"))
+bg.append(load_image("bg_10.png"))
+bg.append(load_image("bg_11.png"))
+bg.append(load_image("bg_12.png"))
+bg.append(load_image("bg_13.png"))
+bg.append(load_image("bg_14.png"))
+bg.append(load_image("bg_15.png"))
+bg.append(load_image("bg_16.png"))
+bg.append(load_image("bg_17.png"))
+bg.append(load_image("bg_18.png"))
+bg.append(load_image("bg_19.png"))
+bg.append(load_image("bg_20.png"))
+bg_00 = load_image("bg_00.png")
+
+road_end_up = load_image("road_end_up.png")
+road_end_down = load_image("road_end_down.png")
+road_end_left = load_image("road_end_left.png")
+road_end_right = load_image("road_end_right.png")
+
 road_up_down = load_image("road_up_down.png")
 road_left_right = load_image("road_left_right.png")
+
+cross_2_down_left = load_image("cross_2_down_left.png")
+cross_2_left_up = load_image("cross_2_left_up.png")
+cross_2_right_down = load_image("cross_2_right_down.png")
+cross_2_up_right = load_image("cross_2_up_right.png")
+
+cross_4 = load_image("cross_4.png")
 
 create_maze()
 
@@ -141,7 +204,11 @@ for _x in range(size_x):
     for _y in range(size_y):
         # Все клетки заполняем BG
         # TODO Сделать несколько фонов и выбирать рандомно
-        screen.blit(bg, (_x * cell_size, _y * cell_size))
+        if maze[_x][_y] == 0:
+            screen.blit(random.choice(bg), (_x * cell_size, _y * cell_size))
+        else:
+            screen.blit(bg_00, (_x * cell_size, _y * cell_size))
+
         if maze[_x][_y] > 0:
             screen.blit(define_sprite(_x, _y), (_x * cell_size, _y * cell_size))
 
