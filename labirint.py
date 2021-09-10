@@ -45,6 +45,15 @@ def load_image(image_file_name):
     return image
 
 
+# Функция определяет какой спрайт надо отрисовать
+def define_sprite(x, y):
+    if maze[x + 1][y] > 0 and maze[x - 1][y] > 0 and maze[x][y+1] == 0 and maze[x][y-1] == 0:
+        return road_left_right
+    if maze[x + 1][y] == 0 and maze[x - 1][y] == 0 and maze[x][y + 1] > 0 and maze[x][y - 1] > 0:
+        return road_up_down
+    return road_up_down
+
+
 ########################################################################################################################
 # Функции для генерации лабиринта
 
@@ -116,12 +125,15 @@ def create_maze():
         x += 1
     maze[x][y] = 3
     cell_editing(x, y, 0)
+
+
 ########################################################################################################################
 
 
 # Подгружаем все спрайты
 bg = load_image("bg_1.png")
-road = load_image("road.png")
+road_up_down = load_image("road_up_down.png")
+road_left_right = load_image("road_left_right.png")
 
 create_maze()
 
@@ -131,7 +143,7 @@ for _x in range(size_x):
         # TODO Сделать несколько фонов и выбирать рандомно
         screen.blit(bg, (_x * cell_size, _y * cell_size))
         if maze[_x][_y] > 0:
-            screen.blit(road, (_x * cell_size, _y * cell_size))
+            screen.blit(define_sprite(_x, _y), (_x * cell_size, _y * cell_size))
 
 pygame.init()
 
