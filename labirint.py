@@ -74,6 +74,14 @@ def define_sprite(x, y):
         return cross_2_down_left
 
     # Перекресток 3
+    if maze[x][y+1] > 0 and maze[x+1][y] > 0 and maze[x][y-1] > 0 and maze[x-1][y] == 0:
+        return cross_3_up_right_down
+    if maze[x][y+1] > 0 and maze[x+1][y] == 0 and maze[x][y-1] > 0 and maze[x-1][y] > 0:
+        return cross_3_up_left_down
+    if maze[x][y+1] == 0 and maze[x+1][y] > 0 and maze[x][y-1] > 0 and maze[x-1][y] > 0:
+        return cross_3_left_up_right
+    if maze[x][y+1] > 0 and maze[x+1][y] > 0 and maze[x][y-1] == 0 and maze[x-1][y] > 0:
+        return cross_3_left_down_right
 
     # Перекресток 4
     if maze[x][y+1] > 0 and maze[x+1][y] > 0 and maze[x][y-1] > 0 and maze[x-1][y] > 0:
@@ -195,6 +203,11 @@ cross_2_down_left = load_image("cross_2_down_left.png")
 cross_2_left_up = load_image("cross_2_left_up.png")
 cross_2_right_down = load_image("cross_2_right_down.png")
 cross_2_up_right = load_image("cross_2_up_right.png")
+
+cross_3_up_right_down = load_image("cross_3_up_right_down.png")
+cross_3_up_left_down = load_image("cross_3_up_left_down.png")
+cross_3_left_up_right = load_image("cross_3_left_up_right.png")
+cross_3_left_down_right = load_image("cross_3_left_down_right.png")
 
 cross_4 = load_image("cross_4.png")
 
