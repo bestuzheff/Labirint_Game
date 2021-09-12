@@ -214,8 +214,13 @@ cross_3_left_down_right = load_image("cross_3_left_down_right_64.png")
 
 cross_4 = load_image("cross_4_64.png")
 
+finish = load_image("finish_64.png")
+
 create_maze()
 
+finish_x = 0
+finish_y = 0
+finish_cell = 0
 for _x in range(size_x):
     for _y in range(size_y):
         # Все клетки заполняем BG
@@ -227,6 +232,15 @@ for _x in range(size_x):
 
         if maze[_x][_y] > 0:
             screen.blit(define_sprite(_x, _y), (_x * cell_size, _y * cell_size))
+        # Сразу найдем кордминаты финиша
+        if maze[_x][_y] > finish_cell:
+            finish_x = _x
+            finish_y = _y
+            finish_cell = maze[_x][_y]
+
+# Выводим финиш
+if finish_x > 0 and finish_y > 0:
+    screen.blit(finish, (finish_x * cell_size, finish_y * cell_size))
 
 pygame.init()
 
